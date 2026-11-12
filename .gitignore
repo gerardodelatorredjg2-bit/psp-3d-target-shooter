@@ -1,0 +1,8 @@
+*.o
+*.elf
+*.prx
+*.PBP
+*.pbp
+*.SFO
+*.BIN
+build/
