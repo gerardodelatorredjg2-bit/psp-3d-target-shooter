@@ -52,9 +52,11 @@ typedef struct {
 } Target;
 
 static unsigned int __attribute__((aligned(16))) gu_list[262144];
-static unsigned int __attribute__((aligned(64))) frame_a[BUF_W * SCREEN_H];
-static unsigned int __attribute__((aligned(64))) frame_b[BUF_W * SCREEN_H];
-static unsigned int __attribute__((aligned(64))) depth_buffer[BUF_W * SCREEN_H];
+#define VRAM_BASE 0x04000000u
+#define FRAME_BYTES ((unsigned int)(BUF_W * SCREEN_H * 4u))
+#define PSP_FRAME_A ((void *)VRAM_BASE)
+#define PSP_FRAME_B ((void *)(VRAM_BASE + FRAME_BYTES))
+#define PSP_DEPTH_BUFFER ((void *)(VRAM_BASE + FRAME_BYTES * 2u))
 static Vertex __attribute__((aligned(16))) hud_vertices[HUD_MAX_VERTICES];
 static short __attribute__((aligned(64))) audio_buffer[AUDIO_SAMPLES];
 
@@ -541,9 +543,9 @@ int main(void) {
     memset(&oldpad,0,sizeof(oldpad));
     sceGuInit();
     sceGuStart(GU_DIRECT,gu_list);
-    sceGuDrawBuffer(GU_PSM_8888,(void*)frame_a,BUF_W);
-    sceGuDispBuffer(SCREEN_W,SCREEN_H,(void*)frame_b,BUF_W);
-    sceGuDepthBuffer((void*)depth_buffer,BUF_W);
+    sceGuDrawBuffer(GU_PSM_8888,PSP_FRAME_A,BUF_W);
+    sceGuDispBuffer(SCREEN_W,SCREEN_H,PSP_FRAME_B,BUF_W);
+    sceGuDepthBuffer(PSP_DEPTH_BUFFER,BUF_W);
     sceGuOffset(2048-(SCREEN_W/2),2048-(SCREEN_H/2));
     sceGuViewport(2048,2048,SCREEN_W,SCREEN_H);
     sceGuScissor(0,0,SCREEN_W,SCREEN_H);

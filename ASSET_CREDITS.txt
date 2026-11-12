@@ -1,0 +1,24 @@
+ASSET CREDITS AND LICENCES
+===========================
+
+All seven source meshes are CC0 1.0 Universal. They were downloaded as
+Wavefront OBJ files from:
+https://github.com/Mcamento8/omnimod-3d-library
+
+KayKit / Kay Lousberg (https://kaylousberg.com/game-assets)
+- Gun_Pistol -> assets/models/pistol.obj
+- Barrel_A -> assets/models/barrel.obj
+- crate -> assets/models/crate.obj
+Licence: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Kenney (https://kenney.nl/assets/category:3D)
+- soda-can -> assets/models/soda_can.obj
+- soda-bottle -> assets/models/soda_bottle.obj
+- tree-large -> assets/models/tree.obj
+- rocks-large -> assets/models/rock.obj
+Licence: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+
+The downloaded meshes are redistributed here under their CC0 terms.
+The game source and build scripts are separately licensed under MIT.

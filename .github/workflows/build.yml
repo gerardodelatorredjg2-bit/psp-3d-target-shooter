@@ -1,5 +1,4 @@
 name: Build PSP homebrew
-
 on:
   push:
   pull_request:
@@ -13,11 +12,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install asset-conversion dependency
+        run: apk add --no-cache python3
+      - name: Convert downloaded OBJ models to PSP GU meshes
+        run: python3 tools/obj2c.py
       - name: Build EBOOT.PBP
         run: |
           make clean
           make
-      - name: Upload PSP build
+      - name: Upload PSP executable
         uses: actions/upload-artifact@v4
         with:
           name: PSP-3D-Target-Shooter-EBOOT

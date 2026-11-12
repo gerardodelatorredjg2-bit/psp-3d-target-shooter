@@ -1,15 +1,17 @@
 TARGET = psp3dshooter
 OBJS = src/main.o
 INCDIR =
-CFLAGS = -O2 -G0 -Wall -Wextra
+CFLAGS = -O2 -G0 -Wall -Wextra -std=gnu99
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
-LIBS = -lpspdebug -lpspgu -lpspgum -lpspge -lpspdisplay -lpspctrl -lpspkernel -lm
+LIBS = -lpspaudio -lpspdebug -lpspgu -lpspgum -lpspge -lpspdisplay -lpspctrl -lpspkernel -lm
 BUILD_PRX = 0
 PSP_FW_VERSION = 660
-PSP_EBOOT_TITLE = PSP 3D Target Shooter
+PSP_EBOOT_TITLE = PSP Target Shooter 3D
 EXTRA_TARGETS = EBOOT.PBP
 
-# The PSPDEV container exports PSPDEV but may not export PSPSDK.
+PSPDEV ?= /opt/pspdev
 PSPSDK ?= $(PSPDEV)/psp/sdk
 include $(PSPSDK)/lib/build.mak
+
+src/main.o: src/models_generated.h
