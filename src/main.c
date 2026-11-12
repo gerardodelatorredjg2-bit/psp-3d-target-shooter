@@ -104,7 +104,7 @@ static void draw_scene(void) {
     rect(391,240,4,22,0xff59616a);
     rect(432,220,14,8,0xffa5adb5);
     if(flash>0) {
-        Vertex muzzle[3]={{0xff40dffff,449,214,0},{0xff40dffff,472,204,0},{0xff40dffff,466,229,0}};
+        Vertex muzzle[3]={{0xff40dfff,449,214,0},{0xff40dfff,472,204,0},{0xff40dfff,466,229,0}};
         draw_tri(muzzle,3);
     }
     /* HUD */
