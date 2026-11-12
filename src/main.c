@@ -3,6 +3,7 @@
 #include <pspgu.h>
 #include <pspgum.h>
 #include <pspctrl.h>
+#include <psputils.h>
 #include <pspaudio.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -58,7 +59,7 @@ static unsigned int __attribute__((aligned(16))) gu_list[262144];
 #define PSP_FRAME_A ((void *)0x00000000u)
 #define PSP_FRAME_B ((void *)FRAME_BYTES)
 #define PSP_DEPTH_BUFFER ((void *)(FRAME_BYTES * 2u))
-static Vertex __attribute__((aligned(16))) hud_vertices[HUD_MAX_VERTICES];
+static Vertex __attribute__((aligned(64))) hud_vertices[HUD_MAX_VERTICES];
 static short __attribute__((aligned(64))) audio_buffer[AUDIO_SAMPLES];
 
 static Target targets[MAX_TARGETS];
@@ -77,10 +78,10 @@ static int last_points = 0;
 static const Vertex ground_mesh[] __attribute__((aligned(16))) = {
     {0xff355c38u,-90.0f,0.0f,-90.0f},
     {0xff355c38u, 90.0f,0.0f,-90.0f},
-    {0xff355c38u, 90.0f,0.0f, 12.0f},
+    {0xff355c38u, 90.0f,0.0f, -1.0f},
     {0xff355c38u,-90.0f,0.0f,-90.0f},
-    {0xff355c38u, 90.0f,0.0f, 12.0f},
-    {0xff355c38u,-90.0f,0.0f, 12.0f}
+    {0xff355c38u, 90.0f,0.0f, -1.0f},
+    {0xff355c38u,-90.0f,0.0f, -1.0f}
 };
 
 static const unsigned char font5x7[36][5] = {
@@ -364,7 +365,7 @@ static void draw_targets(void) {
 }
 
 static void draw_weapon(void) {
-    ScePspFVector3 pos = {0.43f, -0.33f, -1.35f + weapon_recoil};
+    ScePspFVector3 pos = {0.43f, CAMERA_Y - 0.33f, -1.35f + weapon_recoil};
     ScePspFVector3 scl = {0.92f, 0.92f, 0.92f};
     ScePspFVector3 ctr = {-MESH_PISTOL.cx, -MESH_PISTOL.cy, -MESH_PISTOL.cz};
     sceGumPushMatrix();
@@ -501,9 +502,13 @@ static void draw_hud(void) {
         hud_add_text(155,158,"X VOLVER A JUGAR",1.2f,0xff80d9ffu);
     }
     hud_add_crosshair();
-    if (hud_vertex_count > 0)
+    if (hud_vertex_count > 0) {
+        unsigned int bytes = (unsigned int)hud_vertex_count * (unsigned int)sizeof(Vertex);
+        bytes = (bytes + 63u) & ~63u;
+        sceKernelDcacheWritebackRange(hud_vertices, bytes);
         sceGuDrawArray(GU_TRIANGLES, GU_COLOR_8888 | GU_VERTEX_32BITF | GU_TRANSFORM_2D,
                        hud_vertex_count, 0, hud_vertices);
+    }
 }
 
 static void render_frame(void) {
@@ -526,10 +531,12 @@ static void render_frame(void) {
     draw_targets();
     draw_weapon();
     sceGuDisable(GU_DEPTH_TEST);
+    sceGuDisable(GU_CLIP_PLANES);
     sceGuEnable(GU_BLEND);
     sceGuBlendFunc(GU_ADD, GU_SRC_ALPHA, GU_ONE_MINUS_SRC_ALPHA, 0, 0);
     draw_hud();
     sceGuDisable(GU_BLEND);
+    sceGuEnable(GU_CLIP_PLANES);
     sceGuEnable(GU_DEPTH_TEST);
     sceGuFinish();
     sceGuSync(0,0);
@@ -541,6 +548,8 @@ int main(void) {
     int i;
     sceCtrlSetSamplingCycle(0);
     sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
+    /* Make generated mesh arrays visible to the GE before the first draw. */
+    sceKernelDcacheWritebackAll();
     memset(&oldpad,0,sizeof(oldpad));
     sceGuInit();
     sceGuStart(GU_DIRECT,gu_list);
@@ -555,6 +564,7 @@ int main(void) {
     sceGuDepthRange(65535,0);
     sceGuDepthFunc(GU_GEQUAL);
     sceGuDisable(GU_CULL_FACE);
+    sceGuEnable(GU_CLIP_PLANES);
     sceGuDisable(GU_FOG);
     sceGuFinish();
     sceGuSync(0,0);
