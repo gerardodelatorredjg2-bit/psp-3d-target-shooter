@@ -10,4 +10,6 @@ PSP_FW_VERSION = 660
 PSP_EBOOT_TITLE = PSP 3D Target Shooter
 EXTRA_TARGETS = EBOOT.PBP
 
+# The PSPDEV container exports PSPDEV but may not export PSPSDK.
+PSPSDK ?= $(PSPDEV)/psp/sdk
 include $(PSPSDK)/lib/build.mak
