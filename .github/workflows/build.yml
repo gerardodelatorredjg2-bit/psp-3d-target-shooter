@@ -1,0 +1,25 @@
+name: Build PSP homebrew
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: pspdev/pspdev:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build EBOOT.PBP
+        run: |
+          make clean
+          make
+      - name: Upload PSP build
+        uses: actions/upload-artifact@v4
+        with:
+          name: PSP-3D-Target-Shooter-EBOOT
+          path: EBOOT.PBP
+          if-no-files-found: error
