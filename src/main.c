@@ -237,7 +237,7 @@ static void fire_weapon(void) {
     }
     if (best >= 0) {
         Target *t = &targets[best];
-        float sx, sy, depth;
+        float sx = 0.0f, sy = 0.0f, depth = 0.0f;
         project_point(t->x, t->y, t->z, &sx, &sy, &depth);
         hit_x = sx;
         hit_y = sy;
