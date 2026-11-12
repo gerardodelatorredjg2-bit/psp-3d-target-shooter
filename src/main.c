@@ -52,11 +52,12 @@ typedef struct {
 } Target;
 
 static unsigned int __attribute__((aligned(16))) gu_list[262144];
-#define VRAM_BASE 0x04000000u
+/* sceGuDrawBuffer/DispBuffer/DepthBuffer expect offsets from VRAM base,
+   not CPU-visible absolute addresses such as 0x04000000. */
 #define FRAME_BYTES ((unsigned int)(BUF_W * SCREEN_H * 4u))
-#define PSP_FRAME_A ((void *)VRAM_BASE)
-#define PSP_FRAME_B ((void *)(VRAM_BASE + FRAME_BYTES))
-#define PSP_DEPTH_BUFFER ((void *)(VRAM_BASE + FRAME_BYTES * 2u))
+#define PSP_FRAME_A ((void *)0x00000000u)
+#define PSP_FRAME_B ((void *)FRAME_BYTES)
+#define PSP_DEPTH_BUFFER ((void *)(FRAME_BYTES * 2u))
 static Vertex __attribute__((aligned(16))) hud_vertices[HUD_MAX_VERTICES];
 static short __attribute__((aligned(64))) audio_buffer[AUDIO_SAMPLES];
 
